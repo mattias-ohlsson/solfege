@@ -3,7 +3,7 @@
 
 Name:		solfege
 Version:	3.6.4       
-Release:	6%{?dist}
+Release:	7%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -81,6 +81,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Dec 31 2006 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.4-7
+- Rebuild for new pygtk2-devel
+
 * Wed Dec 20 2006 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.4-6
 - Fix charset conversion
 - Remove Application category from desktop file
