@@ -2,8 +2,8 @@
 %define stylesheet %(ls %_datadir/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl)
 
 Name:		solfege
-Version:	3.6.4       
-Release:	8%{?dist}
+Version:	3.6.5       
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -81,6 +81,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 11 2007 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.5-1
+- Update to 3.6.5
 * Sun Dec 31 2006 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.4-8
 - Rebuild for new pygtk2-devel
 
