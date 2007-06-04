@@ -2,7 +2,7 @@
 %define stylesheet %(ls %_datadir/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl)
 
 Name:		solfege
-Version:	3.6.5       
+Version:	3.8.0       
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -41,8 +41,6 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{__mkdir} $RPM_BUILD_ROOT%{_libexecdir}
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/solfege $RPM_BUILD_ROOT%{_libexecdir}/solfege-bin
 #permissions
-%{__chmod} 755 $RPM_BUILD_ROOT%{_datadir}/solfege/mpd/testsetup.py
-%{__chmod} 755 $RPM_BUILD_ROOT%{_datadir}/solfege/src/testsetup.py
 %{__chmod} 755 $RPM_BUILD_ROOT%{_libdir}/solfege/*.so
 
 #Change encoding to UTF-8
@@ -81,6 +79,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 04 2007 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.8.0-1
+- New major release
 * Sun Mar 11 2007 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.5-1
 - Update to 3.6.5
 * Sun Dec 31 2006 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.4-8
