@@ -3,7 +3,7 @@
 
 Name:		solfege
 Version:	3.8.0       
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -79,6 +79,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 3.8.0-2
+- Autorebuild for GCC 4.3
+
 * Mon Jun 04 2007 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.8.0-1
 - New major release
 * Sun Mar 11 2007 Sindre Pedersen Bjørdal <foolish[AT]guezz.net> - 3.6.5-1
