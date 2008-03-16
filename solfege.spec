@@ -2,12 +2,12 @@
 %define stylesheet %(ls %_datadir/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl)
 
 Name:		solfege
-Version:	3.8.0       
-Release:	2%{?dist}
+Version:	3.10.2       
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
-License:	GPL	
+License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://dl.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Source1:	solfege.sh.in
@@ -79,6 +79,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 04 2007 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-1
+- New major release
+- Update license to GPLv3
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 3.8.0-2
 - Autorebuild for GCC 4.3
 
