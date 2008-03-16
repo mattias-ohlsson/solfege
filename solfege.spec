@@ -29,7 +29,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %build
 export INSTALL="%{__install} -c -p"
 #override hardocded path
-%configure --enable-docbook-stylesheet=`ls %_datadir/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl`
+%configure --enable-docbook-stylesheet=`ls %{_datadir}/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl`
 make %{?_smp_mflags}
 
 
@@ -77,7 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sun Mar 16 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-1
+* Sun Mar 16 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-2
 - Clean up docbook path override
 
 * Sun Mar 16 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-1
