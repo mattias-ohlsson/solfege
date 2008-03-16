@@ -79,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Jun 04 2007 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-1
+* Sun Mar 16 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-1
 - New major release
 - Update license to GPLv3
 
