@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.10.2       
-Release:	5%{?dist}
+Version:	3.10.3       
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 18 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.3-1
+- New release
+
 * Sun Mar 16 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.2-5
 - Clean up docbook path override
 
