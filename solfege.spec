@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.10.3       
+Version:	3.10.4       
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 18 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.4-1
+- New bugfix release
+
 * Tue Mar 18 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.3-1
 - New release
 
