@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.10.4       
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 01 2008 Ignacio Vazquez-Abrams <ivazqueznet+rpm@gmail.com> - 3.10.4-2
+- Rebuild for Python 2.6
+
 * Tue Mar 18 2008 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.10.4-1
 - New bugfix release
 
