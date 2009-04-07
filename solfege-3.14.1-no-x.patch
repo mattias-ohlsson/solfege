@@ -1,0 +1,1327 @@
+=== modified file 'Makefile.in'
+--- Makefile.in	2009-03-11 18:47:36 +0000
++++ Makefile.in	2009-04-06 22:03:08 +0000
+@@ -107,7 +107,7 @@
+ 
+ # We need src/_version.py because solfege imports it at runtime.
+ solfege.1: solfege.1.txt src/_version.py
+-	cat $< | sed -e "s/XXOPTIONS/LANGUAGE=C .\/solfege.py --help|sed -n '5,999p'/e" | txt2man -t Solfege -s 1 > $@
++	LANGUAGE=C $(PYTHON) -c "import tools.buildutil; tools.buildutil.create_manpage()" | txt2man -t Solfege -s 1 > $@
+ 
+ rsync-manual: $(foreach lang,$(USER_MANUAL_LANGUAGES),help/$(lang)/one-big-page.html) help/C/one-big-page.html
+ 	rm -rf tmp-build
+
+=== modified file 'src/abstract.py'
+--- src/abstract.py	2009-04-05 20:22:16 +0000
++++ src/abstract.py	2009-04-06 19:48:52 +0000
+@@ -29,6 +29,7 @@
+ import cfg
+ import lessonfile
+ import osutils
++import const
+ 
+ class QstatusDefs:
+     QSTATUS_NO = 0
+@@ -219,24 +220,6 @@
+ 
+ 
+ class RhythmAddOnClass:
+-    RHYTHMS = ("c4", "c8 c8", "c16 c16 c16 c16", "c8 c16 c16",
+-               "c16 c16 c8", "c16 c8 c16", "c8. c16", "c16 c8.",
+-               "r4", "r8c8", "r8 c16 c16", "r16 c16 c8", "r16c8c16",
+-               "r16 c16 c16 c16", "r8 r16 c16", "r16 c8.",
+-               "c12 c12 c12", "r12 c12 c12",
+-               "c12 r12 c12", "c12 c12 r12", "r12 r12 c12", "r12 c12 r12",
+-               "c4.", "c4 c8", # 22, 23
+-               "c8 c4", "c8 c8 c8", # 24, 25
+-               "c4 c16 c16", # 26
+-               "c16 c16 c4", # 27
+-               "c8 c8 c16 c16", #28
+-               "c8 c16 c16 c8", #29
+-               "c16 c16 c8 c8", #30
+-               "c8 c16 c16 c16 c16", #31
+-               "c16 c16 c8 c16 c16", #32
+-               "c16 c16 c16 c16 c8", #33
+-               "c16 c16 c16 c16 c16 c16", #34
+-               )
+     def new_question(self):
+         """returns:
+                self.ERR_PICKY : if the question is not yet solved and the
+@@ -258,7 +241,7 @@
+         norest_v = []
+         v = []
+         for x in self.m_P.header.rhythm_elements:
+-            if not (self.RHYTHMS[x][0] == "r"
++            if not (const.RHYTHMS[x][0] == "r"
+                     and self.get_bool("not_start_with_rest")):
+                 norest_v.append(x)
+             v.append(x)
+@@ -283,7 +266,7 @@
+             else:
+                 count_in_notelen = "4"
+             s = "d%s " % count_in_notelen * self.get_int("count_in")
+-        s += " ".join([self.RHYTHMS[k] for k in self.m_question])
++        s += " ".join([const.RHYTHMS[k] for k in self.m_question])
+         return s
+     def get_music_string(self):
+         """
+@@ -572,7 +555,7 @@
+         table.show_all()
+     def pngcheckbutton(self, i):
+         btn = gtk.CheckButton()
+-        btn.add(gu.create_rhythm_image(RhythmAddOnClass.RHYTHMS[i]))
++        btn.add(gu.create_rhythm_image(const.RHYTHMS[i]))
+         btn.show()
+         btn.connect('clicked', self.select_element_cb, i)
+         return btn
+
+=== modified file 'src/app.py'
+--- src/app.py	2009-04-04 18:28:28 +0000
++++ src/app.py	2009-04-06 22:11:51 +0000
+@@ -33,6 +33,7 @@
+ import reportlib
+ import filesystem
+ import osutils
++from optionparser import SolfegeOptionParser
+ 
+ def check_rcfile():
+     """See default.config for rcfileversion values, meanings and
+=== added file 'src/const.py'
+--- src/const.py	1970-01-01 00:00:00 +0000
++++ src/const.py	2009-04-06 19:48:52 +0000
+@@ -0,0 +1,38 @@
++# GNU Solfege - free ear training software
++# Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008  Tom Cato Amundsen
++#
++# This program is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
++# Moved RHYTHMS here because is should be available from a module that does
++# not pull in the gtk module.
++
++RHYTHMS = ("c4", "c8 c8", "c16 c16 c16 c16", "c8 c16 c16",
++           "c16 c16 c8", "c16 c8 c16", "c8. c16", "c16 c8.",
++           "r4", "r8c8", "r8 c16 c16", "r16 c16 c8", "r16c8c16",
++           "r16 c16 c16 c16", "r8 r16 c16", "r16 c8.",
++           "c12 c12 c12", "r12 c12 c12",
++           "c12 r12 c12", "c12 c12 r12", "r12 r12 c12", "r12 c12 r12",
++           "c4.", "c4 c8", # 22, 23
++           "c8 c4", "c8 c8 c8", # 24, 25
++           "c4 c16 c16", # 26
++           "c16 c16 c4", # 27
++           "c8 c8 c16 c16", #28
++           "c8 c16 c16 c8", #29
++           "c16 c16 c8 c8", #30
++           "c8 c16 c16 c16 c16", #31
++           "c16 c16 c8 c16 c16", #32
++           "c16 c16 c16 c16 c8", #33
++           "c16 c16 c16 c16 c16 c16", #34
++)
++
+
+=== modified file 'src/learning_tree_editor.py'
+--- src/learning_tree_editor.py	2008-06-01 09:44:59 +0000
++++ src/learning_tree_editor.py	2009-04-06 19:48:52 +0000
+@@ -17,7 +17,6 @@
+ 
+ import gtk
+ import gobject
+-import pprint
+ import copy
+ import sys
+ import os
+@@ -26,473 +25,8 @@
+ import lessonfilegui
+ from gpath import Path
+ import filesystem
+-
+-def get_learning_tree_list(debug):
+-    """
+-    Return a list of tuples with info about the learning trees found.
+-    Tuple objects:
+-    1. The string "user" or "solfege"
+-    2. The filename, not including the name of the directory
+-    3. Full path to the learning tree.
+-    """
+-    trees = []
+-    for cls, dir in (('solfege', u'learningtrees'),
+-        ('user', os.path.join(filesystem.user_data(), "learningtrees"))):
+-        try:
+-            v = os.listdir(dir)
+-        except OSError:
+-            v = []
+-        for fn in v:
+-            if cls == 'solfege':
+-                fullpath = os.path.join("learningtrees", fn)
+-            else:
+-                fullpath = os.path.join(filesystem.user_data(), "learningtrees", fn)
+-            trees.append((cls, fn, fullpath))
+-    if not debug:
+-        try:
+-            trees.remove(('solfege', 'debugtree.txt', os.path.join('learningtrees', 'debugtree.txt')))
+-        except ValueError:
+-            # The debugtree.txtfile is for some reason missing
+-            pass
+-    return trees
+-
+-class Menu(dict):
+-    def new_from_name(name):
+-        m = Menu({'name': name, 'children': []})
+-        return m
+-    new_from_name = staticmethod(new_from_name)
+-    def get_name(self):
+-        return self['name']
+-    def set_name(self, name):
+-        self['name'] = name
+-    name = property(get_name, set_name)
+-    def get_children(self):
+-        return self['children']
+-    def set_children(self, children):
+-        self['children'] = children
+-    children = property(get_children, set_children)
+-    def pformat(self, indent):
+-        return "%(indent)s{'name': %(name)r,\n" \
+-        "%(indent)s 'nametotranslate': _(%(name)r),\n" \
+-        "%(indent)s 'children': [\n" \
+-        "%(children)s ]\n" \
+-        "%(indent)s}," %  {
+-            'indent': " " * indent,
+-            'name': self.name,
+-            'children': self.pformat_children(indent + 4)
+-        }
+-    def pformat_children(self, indent):
+-        v = []
+-        for child in self.children:
+-            if isinstance(child, basestring):
+-                v.append("%s%r," % (" " * indent, child))
+-            else:
+-                v.append(child.pformat(indent))
+-        return "\n".join(v)
+-
+-
+-class LearningTree:
+-    def __init__(self, lessonfile_manager):
+-        self.lessonfile_manager = lessonfile_manager
+-        self.m_menus = []
+-        self.m_deps = {}
+-        self.m_modified = False
+-        self.m_title = ''
+-        self.m_learning_tree_version = 3
+-        self.m_visibility = 0
+-    def load(self, filename):
+-        self.read_file(filename)
+-        self.post_load()
+-    def read_file(self, filename):
+-        self.m_visibility = 0
+-        self.m_learning_tree_version = 0
+-        g = {'_': lambda s: s}
+-        v = eval(open(filename, 'rU').read(), g)
+-        if type(v) == dict:
+-            self.m_menus = v['menu']
+-            self.m_deps = v['deps']
+-            self.m_title = v.get('title', '')
+-            self.m_visibility = v['visibility']
+-            self.m_learning_tree_version = v['version']
+-        # The different lengths of v below is to be able to read
+-        # old formats of the learning tree.
+-        elif len(v) == 2:
+-            self.m_menus, self.m_deps = v
+-        elif len(v) == 3:
+-            self.m_menus, self.m_deps, self.m_visibility = v
+-        elif len(v) == 4:
+-            self.m_learning_tree_version, self.m_menus, self.m_deps, self.m_visibility = v
+-        if self.m_learning_tree_version == 0:
+-            # Change from old style with one menu to multiple exercise
+-            # menus on the menu bar. If version == 0, then the tree only
+-            # have one menu "Exercises"
+-            self.m_menus = [
+-              {'name': "_Practise",
+-               'submenus': self.m_menus},
+-            ]
+-            self.m_menus[0]['children'] = [{'name': n['name'], 'children': n['lessons']} for n in self.m_menus[0]['submenus']]
+-            del self.m_menus[0]['submenus']
+-        if not self.m_title:
+-            self.m_title = filename
+-    def post_load(self):
+-        self.m_menus = [Menu(d) for d in self.m_menus]
+-        for idx, menu in enumerate(self.m_menus):
+-            self.m_menus[idx].children = [Menu(s) for s in menu.children]
+-        self.m_learning_tree_version = 2
+-        junk_id = []
+-        # FIXME here we are assuming that there are only two levels of menus
+-        if self.lessonfile_manager:
+-            # lessonfile_manager is None in some test cases
+-            for menu in self.m_menus:
+-                for topic in menu.children:
+-                    for j in topic.children:
+-                        if j not in self.lessonfile_manager.m_uiddb:
+-                            print >> sys.stderr, "Junking the registration of lesson_id '%s'\nfrom learning tree. File not found." % j
+-                            junk_id.append(j)
+-        for j in junk_id:
+-            for menu in self.m_menus:
+-                for topic in menu.children:
+-                    if j in topic.children:
+-                        del topic.children[topic.children.index(j)]
+-                if j in self.m_deps:
+-                    del self.m_deps[j]
+-                for d in self.m_deps:
+-                    if j in self.m_deps[d]:
+-                        self.m_deps[d].remove(j)
+-        self.sort_topics()
+-        self.calculate_visibilities()
+-        self.m_modified = False
+-    def save(self, filename):
+-        self.m_learning_tree_version = 3
+-        ofile = open(filename, 'w')
+-        print >> ofile, "# GNU Solfege learning tree"
+-        print >> ofile, "{"
+-        print >> ofile, " 'version': %i," % self.m_learning_tree_version
+-        print >> ofile, " 'title': '%s'," % self.m_title.replace("'", r"\'")
+-        print >> ofile, " 'titletotranslate': _('%s')," % self.m_title.replace("'", r"\'")
+-        print >> ofile, " 'visibility': %i," % self.m_visibility
+-        print >> ofile, " 'menu': [ # start of list of menus"
+-        for menu in self.m_menus:
+-            print >> ofile, menu.pformat(4)
+-        print >> ofile, "  ], # end of list of menus"
+-        # Delete dependency info about lesson files that are not in the
+-        # learning tree.
+-        lesson_ids = list(self.iterate_all_lessons())
+-        for dep in [d for d in self.m_deps if d not in lesson_ids]:
+-            del self.m_deps[dep]
+-        print >> ofile, " 'deps':",
+-        print >> ofile, "%s," % pprint.pformat(self.m_deps)
+-        print >> ofile, "# End of dict mappding dependencies."
+-        print >> ofile, "}"
+-        ofile.close()
+-        self.m_modified = False
+-    def new_menu(self, menuname):
+-        self.m_menus.append(Menu({'name': menuname, 'children': []}))
+-        self.m_modified = True
+-    def new_topic(self, menu_idx, topicname):
+-        assert topicname not in [s.name for s in self.m_menus[menu_idx].children]
+-        self.m_menus[menu_idx].children.append(Menu.new_from_name(topicname))
+-        self.m_modified = True
+-    def sort_topics(self):
+-        """
+-        Sort the lessons in each topic.
+-        """
+-        for menu in self.m_menus:
+-            for topic in menu.children:
+-                topic.children.sort(lambda a, b: self.cmp(a, b))
+-    def move_elem_up(self, path):
+-        """
+-        Move elem up. Return True if success.
+-        Return False if we are the first elem.
+-        This function only moves the element within the menu.
+-        """
+-        if path[-1] == 0:
+-            return False
+-        p = path[:-1]
+-        new_path = path[:-1] + (path[-1],)
+-        try:
+-            self.get(p).children[path[-1]], self.get(p).children[path[-1]-1] = \
+-                self.get(p).children[path[-1]-1], self.get(p).children[path[-1]]
+-        except IndexError:
+-            return False
+-        self.m_modified = True
+-        return True
+-    def move_elem_to_prev_menu(self, path):
+-        """
+-        Move the element pointed to by path to the prev menu.
+-        Return None if we are on the first menu.
+-        """
+-        assert path[-2] > 0
+-        to_path = list(path[:-1])
+-        to_path[-1] -= 1
+-        to_path = tuple(to_path)
+-        self.get(to_path).children.append(self.get(path))
+-        del self.get(path[:-1]).children[path[-1]]
+-        self.m_modified = True
+-        return to_path + (len(self.get(to_path).children)-1,)
+-    def move_elem_down(self, path):
+-        """
+-        Move move the element (submenu or lesson) one step down on the menu
+-        containing it, and return True if successfull.  Return False and do
+-        nothing if the element path points to are the last element.
+-        """
+-        p = path[:-1]
+-        try:
+-            self.get(p).children[path[-1]], \
+-                    self.get(p).children[path[-1]+1] = \
+-                    self.get(p).children[path[-1]+1], \
+-                    self.get(p).children[path[-1]]
+-        except IndexError:
+-            return False
+-        self.m_modified = True
+-        return True
+-    def move_elem_to_next_menu(self, path):
+-        """
+-        Move the element pointed to by path to the next menu.
+-        Faild miserably if we are on the last menu, because the
+-        gui checks this right now. Return the path to the new
+-        position.
+-        """
+-        pn = list(path[:-1])
+-        pn[0] += 1
+-        pn = tuple(pn)
+-        self.get(pn).children.insert(0, self.get(path))
+-        del self.get(path[:-1]).children[path[-1]]
+-        self.m_modified = True
+-        return pn + (0,)
+-    def move_lesson_up(self, path):
+-        """
+-        Return True if successful, else False.
+-        The tree is unchanged if we return False.
+-        """
+-        if path[-1] == 0:
+-            # We are the first lesson
+-            return False
+-        move_id = self.get(path)
+-        prev_id = self.get(Path(path).prev())
+-        if prev_id not in list(self.iter_subdeps(move_id)):
+-            self.move_elem_up(path)
+-            self.m_modified = True
+-            return True
+-        return False
+-    def move_lesson_down(self, path):
+-        """
+-        Return True if successful, else None.
+-        The tree is unchanged if we return None.
+-        """
+-        p = path[:-1]
+-        i = path[-1]
+-        move_id = self.get(path)
+-        try:
+-            next_id = self.get(Path(path).next())
+-        except IndexError:
+-            return
+-        if move_id not in list(self.iter_subdeps(next_id)):
+-            try:
+-                self.get(p).children[i], self.get(p).children[i + 1] = \
+-                    self.get(p).children[i + 1], self.get(p).children[i]
+-            except IndexError:
+-                return False
+-            self.m_modified = True
+-            return True
+-        return False
+-    def add_lesson(self, path, lesson_id):
+-        """
+-        Each lesson can only be once in a topic.
+-        Return True if sucessful, False if not
+-        """
+-        menu = self.get(path)
+-        if lesson_id not in menu.children:
+-            if not lesson_id in self.m_deps:
+-                self.m_deps[lesson_id] = []
+-            menu.children.append(lesson_id)
+-            menu.children.sort(lambda a, b: self.cmp(a, b))
+-        else:
+-            return False
+-        self.m_modified = True
+-        return True
+-    def delete_lesson(self, path):
+-        menu = self.get(path[:-1])
+-        del menu.children[path[-1]]
+-        self.m_modified = True
+-    def add_dependency(self, lesson_id, dep_id):
+-        assert dep_id not in self.m_deps[lesson_id]
+-        self.m_deps[lesson_id].append(dep_id)
+-        self.sort_topics()
+-        self.m_modified = True
+-    def delete_dependency(self, lesson_id, id_to_delete):
+-        i = self.m_deps[lesson_id].index(id_to_delete)
+-        del self.m_deps[lesson_id][i]
+-        self.sort_topics()
+-        self.m_modified = True
+-    def iterate_all_lessons2(self):
+-        """
+-        Iterate all lessons that are added to the learning tree.
+-        Yields the tuple (lesson_ids, path,)
+-        """
+-        def do_children(item, path):
+-            # path == (0,) is the first menu on the menubar
+-            path = path.child()
+-            for c in item.children:
+-                if isinstance(c, Menu):
+-                    for x in do_children(c, path):
+-                        yield x
+-                else:
+-                    assert isinstance(c, basestring)
+-                    yield c, path
+-                path = path.next()
+-        path = Path((0,))
+-        for menu in self.m_menus:
+-            for x in do_children(menu, path):
+-                yield x
+-            path = path.next()
+-    def iterate_all_lessons(self):
+-        """
+-        Iterate all lessons that are added to the learning tree.
+-        Yields lesson_ids
+-        """
+-        def do_children(item):
+-            for c in item.children:
+-                if isinstance(c, Menu):
+-                    for x in do_children(c):
+-                        yield x
+-                else:
+-                    assert isinstance(c, basestring)
+-                    yield c
+-        for menu in self.m_menus:
+-            for x in do_children(menu):
+-                yield x
+-    def iterate_topics_for_id(self, lesson_id):
+-        """
+-        Yield a string with the name of the submenu containing
+-        the lesson_id.
+-        """
+-        def do_menu(menu):
+-            if lesson_id in menu.children:
+-                yield menu.name
+-            for child in menu.children:
+-                if isinstance(child, Menu):
+-                    for n in do_menu(child):
+-                        yield n
+-        for menu in self.m_menus:
+-            for n in do_menu(menu):
+-                yield n
+-    def iterate_deps_for_id(self, lesson_id):
+-        """
+-        Iterate all the direct dependencies for lesson_id.
+-        It does not iterate the sub-dependencies.
+-        """
+-        for dep in self.m_deps[lesson_id]:
+-            yield dep
+-    def iterate_possible_deps_for(self, path):
+-        """
+-        All lessons, except those on the x-list.
+-        You get on the x-list if:
+-        1. is OBJECT
+-        2. already in the depends list of OBJECT
+-        3. depend on anything in the x-list
+-        4. is a dep (of dep)* of OBJ
+-
+-
+-        Filter out lessons that
+-        1. is OBJECT
+-        2. is in depends tree below OBJECT
+-        3. has OBJECT in its depends tree
+-        """
+-        # The lesson_id we are finding possible deps for
+-        this_id = self.get(path)
+-        # First, lets make a list of all lessons that currently are in a topic
+-        used = {}
+-        for lesson_id in self.iterate_all_lessons():
+-            used[lesson_id] = True
+-        # Filter out this_id (point 1 in the list in the docstring)
+-        del used[this_id]
+-        def check(lesson_id):
+-            # Filter out according to #2 and #3 in the docstring
+-            if lesson_id in list(self.iter_subdeps(this_id)) \
+-                    or this_id in list(self.iter_subdeps(lesson_id)):
+-                return False
+-            return True
+-        for i in [k for k in used.keys() if check(k)]:
+-            yield i
+-    def iter_subdeps(self, lesson_id):
+-        for n in self.m_deps[lesson_id]:
+-            yield n
+-            for nn in self.iter_subdeps(n):
+-                yield nn
+-    def is_practisable(self, lesson_id):
+-        for i in self.iterate_deps_for_id(lesson_id):
+-            if not self.lessonfile_manager.is_test_passed(i):
+-                return False
+-        return True
+-    def calculate_visibilities(self):
+-        self.m_visibilities = {}
+-        v = self.m_deps.keys()
+-        v.sort(lambda a, b: self.cmp(a, b))
+-        for i in v:
+-            if i not in self.lessonfile_manager.m_uiddb:
+-                continue
+-            if not self.lessonfile_manager.get(i, 'test'):
+-                self.m_visibilities[i] = 0
+-            elif not list(self.iterate_deps_for_id(i)):
+-                self.m_visibilities[i] = 0
+-            elif self.is_practisable(i):
+-                self.m_visibilities[i] = 0
+-            else:
+-                self.m_visibilities[i] = max([self.m_visibilities[x] for x in self.m_deps[i]]) + 1
+-    def cmp(self, id_a, id_b):
+-        """
+-        Return -1, 0, 1, like a cmp function.
+-        """
+-        deps_a = list(self.iter_subdeps(id_b))
+-        if id_a in deps_a:
+-            return -1
+-        deps_b = list(self.iter_subdeps(id_a))
+-        if id_b in deps_b:
+-            return 1
+-        return cmp(len(deps_b), len(deps_a))
+-    def get_use_dict(self):
+-        """
+-        return a dict mapping lesson_id to the number of times the lesson
+-        has been added to the learning tree.
+-        """
+-        retval = {}
+-        for lesson_id in self.iterate_all_lessons():
+-            retval[lesson_id] = retval.get(lesson_id, 0) + 1
+-        return retval
+-    def get_use_count(self, lesson_id):
+-        """
+-        Return an integer telling how many times the lesson lesson_id
+-        is used as an exercise.
+-        """
+-        count = 0
+-        for i in self.iterate_all_lessons():
+-            if i == lesson_id:
+-                count += 1
+-        return count
+-    def get_dep_use_count(self, lesson_id):
+-        """
+-        Return an integer telling how many lessons that depends on lesson_id.
+-        """
+-        count = 0
+-        for v in self.m_deps.values():
+-            for i in v:
+-                if i == lesson_id:
+-                    count += 1
+-        return count
+-    def remove_all_deps_of(self, del_id):
+-        for v in self.m_deps.values():
+-            if del_id in v:
+-                del v[v.index(del_id)]
+-        self.m_modified = True
+-    def get(self, path):
+-        """
+-        Return the element pointed to by path.
+-        """
+-        elem = self.m_menus[path[0]]
+-        for idx in path[1:]:
+-            elem = elem.children[idx]
+-        return elem
++from learningtree import LearningTree, get_learning_tree_list, Menu
++
+ 
+ class LessonFileDialogCommon(gtk.Dialog):
+     def __init__(self, app, tree, path):
+
+=== added file 'src/learningtree.py'
+--- src/learningtree.py	1970-01-01 00:00:00 +0000
++++ src/learningtree.py	2009-04-06 19:48:52 +0000
+@@ -0,0 +1,490 @@
++# GNU Solfege - free ear training software
++# Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008  Tom Cato Amundsen
++#
++# This program is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
++
++import pprint
++import os
++
++import filesystem
++from gpath import Path
++
++def get_learning_tree_list(debug):
++    """
++    Return a list of tuples with info about the learning trees found.
++    Tuple objects:
++    1. The string "user" or "solfege"
++    2. The filename, not including the name of the directory
++    3. Full path to the learning tree.
++    """
++    trees = []
++    for cls, dir in (('solfege', u'learningtrees'),
++        ('user', os.path.join(filesystem.user_data(), "learningtrees"))):
++        try:
++            v = os.listdir(dir)
++        except OSError:
++            v = []
++        for fn in v:
++            if cls == 'solfege':
++                fullpath = os.path.join("learningtrees", fn)
++            else:
++                fullpath = os.path.join(filesystem.user_data(), "learningtrees", fn)
++            trees.append((cls, fn, fullpath))
++    if not debug:
++        try:
++            trees.remove(('solfege', 'debugtree.txt', os.path.join('learningtrees', 'debugtree.txt')))
++        except ValueError:
++            # The debugtree.txtfile is for some reason missing
++            pass
++    return trees
++
++class Menu(dict):
++    def new_from_name(name):
++        m = Menu({'name': name, 'children': []})
++        return m
++    new_from_name = staticmethod(new_from_name)
++    def get_name(self):
++        return self['name']
++    def set_name(self, name):
++        self['name'] = name
++    name = property(get_name, set_name)
++    def get_children(self):
++        return self['children']
++    def set_children(self, children):
++        self['children'] = children
++    children = property(get_children, set_children)
++    def pformat(self, indent):
++        return "%(indent)s{'name': %(name)r,\n" \
++        "%(indent)s 'nametotranslate': _(%(name)r),\n" \
++        "%(indent)s 'children': [\n" \
++        "%(children)s ]\n" \
++        "%(indent)s}," %  {
++            'indent': " " * indent,
++            'name': self.name,
++            'children': self.pformat_children(indent + 4)
++        }
++    def pformat_children(self, indent):
++        v = []
++        for child in self.children:
++            if isinstance(child, basestring):
++                v.append("%s%r," % (" " * indent, child))
++            else:
++                v.append(child.pformat(indent))
++        return "\n".join(v)
++
++
++class LearningTree:
++    def __init__(self, lessonfile_manager):
++        self.lessonfile_manager = lessonfile_manager
++        self.m_menus = []
++        self.m_deps = {}
++        self.m_modified = False
++        self.m_title = ''
++        self.m_learning_tree_version = 3
++        self.m_visibility = 0
++    def load(self, filename):
++        self.read_file(filename)
++        self.post_load()
++    def read_file(self, filename):
++        self.m_visibility = 0
++        self.m_learning_tree_version = 0
++        g = {'_': lambda s: s}
++        v = eval(open(filename, 'rU').read(), g)
++        if type(v) == dict:
++            self.m_menus = v['menu']
++            self.m_deps = v['deps']
++            self.m_title = v.get('title', '')
++            self.m_visibility = v['visibility']
++            self.m_learning_tree_version = v['version']
++        # The different lengths of v below is to be able to read
++        # old formats of the learning tree.
++        elif len(v) == 2:
++            self.m_menus, self.m_deps = v
++        elif len(v) == 3:
++            self.m_menus, self.m_deps, self.m_visibility = v
++        elif len(v) == 4:
++            self.m_learning_tree_version, self.m_menus, self.m_deps, self.m_visibility = v
++        if self.m_learning_tree_version == 0:
++            # Change from old style with one menu to multiple exercise
++            # menus on the menu bar. If version == 0, then the tree only
++            # have one menu "Exercises"
++            self.m_menus = [
++              {'name': "_Practise",
++               'submenus': self.m_menus},
++            ]
++            self.m_menus[0]['children'] = [{'name': n['name'], 'children': n['lessons']} for n in self.m_menus[0]['submenus']]
++            del self.m_menus[0]['submenus']
++        if not self.m_title:
++            self.m_title = filename
++    def post_load(self):
++        self.m_menus = [Menu(d) for d in self.m_menus]
++        for idx, menu in enumerate(self.m_menus):
++            self.m_menus[idx].children = [Menu(s) for s in menu.children]
++        self.m_learning_tree_version = 2
++        junk_id = []
++        # FIXME here we are assuming that there are only two levels of menus
++        if self.lessonfile_manager:
++            # lessonfile_manager is None in some test cases
++            for menu in self.m_menus:
++                for topic in menu.children:
++                    for j in topic.children:
++                        if j not in self.lessonfile_manager.m_uiddb:
++                            print >> sys.stderr, "Junking the registration of lesson_id '%s'\nfrom learning tree. File not found." % j
++                            junk_id.append(j)
++        for j in junk_id:
++            for menu in self.m_menus:
++                for topic in menu.children:
++                    if j in topic.children:
++                        del topic.children[topic.children.index(j)]
++                if j in self.m_deps:
++                    del self.m_deps[j]
++                for d in self.m_deps:
++                    if j in self.m_deps[d]:
++                        self.m_deps[d].remove(j)
++        self.sort_topics()
++        self.calculate_visibilities()
++        self.m_modified = False
++    def save(self, filename):
++        self.m_learning_tree_version = 3
++        ofile = open(filename, 'w')
++        print >> ofile, "# GNU Solfege learning tree"
++        print >> ofile, "{"
++        print >> ofile, " 'version': %i," % self.m_learning_tree_version
++        print >> ofile, " 'title': '%s'," % self.m_title.replace("'", r"\'")
++        print >> ofile, " 'titletotranslate': _('%s')," % self.m_title.replace("'", r"\'")
++        print >> ofile, " 'visibility': %i," % self.m_visibility
++        print >> ofile, " 'menu': [ # start of list of menus"
++        for menu in self.m_menus:
++            print >> ofile, menu.pformat(4)
++        print >> ofile, "  ], # end of list of menus"
++        # Delete dependency info about lesson files that are not in the
++        # learning tree.
++        lesson_ids = list(self.iterate_all_lessons())
++        for dep in [d for d in self.m_deps if d not in lesson_ids]:
++            del self.m_deps[dep]
++        print >> ofile, " 'deps':",
++        print >> ofile, "%s," % pprint.pformat(self.m_deps)
++        print >> ofile, "# End of dict mappding dependencies."
++        print >> ofile, "}"
++        ofile.close()
++        self.m_modified = False
++    def new_menu(self, menuname):
++        self.m_menus.append(Menu({'name': menuname, 'children': []}))
++        self.m_modified = True
++    def new_topic(self, menu_idx, topicname):
++        assert topicname not in [s.name for s in self.m_menus[menu_idx].children]
++        self.m_menus[menu_idx].children.append(Menu.new_from_name(topicname))
++        self.m_modified = True
++    def sort_topics(self):
++        """
++        Sort the lessons in each topic.
++        """
++        for menu in self.m_menus:
++            for topic in menu.children:
++                topic.children.sort(lambda a, b: self.cmp(a, b))
++    def move_elem_up(self, path):
++        """
++        Move elem up. Return True if success.
++        Return False if we are the first elem.
++        This function only moves the element within the menu.
++        """
++        if path[-1] == 0:
++            return False
++        p = path[:-1]
++        new_path = path[:-1] + (path[-1],)
++        try:
++            self.get(p).children[path[-1]], self.get(p).children[path[-1]-1] = \
++                self.get(p).children[path[-1]-1], self.get(p).children[path[-1]]
++        except IndexError:
++            return False
++        self.m_modified = True
++        return True
++    def move_elem_to_prev_menu(self, path):
++        """
++        Move the element pointed to by path to the prev menu.
++        Return None if we are on the first menu.
++        """
++        assert path[-2] > 0
++        to_path = list(path[:-1])
++        to_path[-1] -= 1
++        to_path = tuple(to_path)
++        self.get(to_path).children.append(self.get(path))
++        del self.get(path[:-1]).children[path[-1]]
++        self.m_modified = True
++        return to_path + (len(self.get(to_path).children)-1,)
++    def move_elem_down(self, path):
++        """
++        Move move the element (submenu or lesson) one step down on the menu
++        containing it, and return True if successfull.  Return False and do
++        nothing if the element path points to are the last element.
++        """
++        p = path[:-1]
++        try:
++            self.get(p).children[path[-1]], \
++                    self.get(p).children[path[-1]+1] = \
++                    self.get(p).children[path[-1]+1], \
++                    self.get(p).children[path[-1]]
++        except IndexError:
++            return False
++        self.m_modified = True
++        return True
++    def move_elem_to_next_menu(self, path):
++        """
++        Move the element pointed to by path to the next menu.
++        Faild miserably if we are on the last menu, because the
++        gui checks this right now. Return the path to the new
++        position.
++        """
++        pn = list(path[:-1])
++        pn[0] += 1
++        pn = tuple(pn)
++        self.get(pn).children.insert(0, self.get(path))
++        del self.get(path[:-1]).children[path[-1]]
++        self.m_modified = True
++        return pn + (0,)
++    def move_lesson_up(self, path):
++        """
++        Return True if successful, else False.
++        The tree is unchanged if we return False.
++        """
++        if path[-1] == 0:
++            # We are the first lesson
++            return False
++        move_id = self.get(path)
++        prev_id = self.get(Path(path).prev())
++        if prev_id not in list(self.iter_subdeps(move_id)):
++            self.move_elem_up(path)
++            self.m_modified = True
++            return True
++        return False
++    def move_lesson_down(self, path):
++        """
++        Return True if successful, else None.
++        The tree is unchanged if we return None.
++        """
++        p = path[:-1]
++        i = path[-1]
++        move_id = self.get(path)
++        try:
++            next_id = self.get(Path(path).next())
++        except IndexError:
++            return
++        if move_id not in list(self.iter_subdeps(next_id)):
++            try:
++                self.get(p).children[i], self.get(p).children[i + 1] = \
++                    self.get(p).children[i + 1], self.get(p).children[i]
++            except IndexError:
++                return False
++            self.m_modified = True
++            return True
++        return False
++    def add_lesson(self, path, lesson_id):
++        """
++        Each lesson can only be once in a topic.
++        Return True if sucessful, False if not
++        """
++        menu = self.get(path)
++        if lesson_id not in menu.children:
++            if not lesson_id in self.m_deps:
++                self.m_deps[lesson_id] = []
++            menu.children.append(lesson_id)
++            menu.children.sort(lambda a, b: self.cmp(a, b))
++        else:
++            return False
++        self.m_modified = True
++        return True
++    def delete_lesson(self, path):
++        menu = self.get(path[:-1])
++        del menu.children[path[-1]]
++        self.m_modified = True
++    def add_dependency(self, lesson_id, dep_id):
++        assert dep_id not in self.m_deps[lesson_id]
++        self.m_deps[lesson_id].append(dep_id)
++        self.sort_topics()
++        self.m_modified = True
++    def delete_dependency(self, lesson_id, id_to_delete):
++        i = self.m_deps[lesson_id].index(id_to_delete)
++        del self.m_deps[lesson_id][i]
++        self.sort_topics()
++        self.m_modified = True
++    def iterate_all_lessons2(self):
++        """
++        Iterate all lessons that are added to the learning tree.
++        Yields the tuple (lesson_ids, path,)
++        """
++        def do_children(item, path):
++            # path == (0,) is the first menu on the menubar
++            path = path.child()
++            for c in item.children:
++                if isinstance(c, Menu):
++                    for x in do_children(c, path):
++                        yield x
++                else:
++                    assert isinstance(c, basestring)
++                    yield c, path
++                path = path.next()
++        path = Path((0,))
++        for menu in self.m_menus:
++            for x in do_children(menu, path):
++                yield x
++            path = path.next()
++    def iterate_all_lessons(self):
++        """
++        Iterate all lessons that are added to the learning tree.
++        Yields lesson_ids
++        """
++        def do_children(item):
++            for c in item.children:
++                if isinstance(c, Menu):
++                    for x in do_children(c):
++                        yield x
++                else:
++                    assert isinstance(c, basestring)
++                    yield c
++        for menu in self.m_menus:
++            for x in do_children(menu):
++                yield x
++    def iterate_topics_for_id(self, lesson_id):
++        """
++        Yield a string with the name of the submenu containing
++        the lesson_id.
++        """
++        def do_menu(menu):
++            if lesson_id in menu.children:
++                yield menu.name
++            for child in menu.children:
++                if isinstance(child, Menu):
++                    for n in do_menu(child):
++                        yield n
++        for menu in self.m_menus:
++            for n in do_menu(menu):
++                yield n
++    def iterate_deps_for_id(self, lesson_id):
++        """
++        Iterate all the direct dependencies for lesson_id.
++        It does not iterate the sub-dependencies.
++        """
++        for dep in self.m_deps[lesson_id]:
++            yield dep
++    def iterate_possible_deps_for(self, path):
++        """
++        All lessons, except those on the x-list.
++        You get on the x-list if:
++        1. is OBJECT
++        2. already in the depends list of OBJECT
++        3. depend on anything in the x-list
++        4. is a dep (of dep)* of OBJ
++
++
++        Filter out lessons that
++        1. is OBJECT
++        2. is in depends tree below OBJECT
++        3. has OBJECT in its depends tree
++        """
++        # The lesson_id we are finding possible deps for
++        this_id = self.get(path)
++        # First, lets make a list of all lessons that currently are in a topic
++        used = {}
++        for lesson_id in self.iterate_all_lessons():
++            used[lesson_id] = True
++        # Filter out this_id (point 1 in the list in the docstring)
++        del used[this_id]
++        def check(lesson_id):
++            # Filter out according to #2 and #3 in the docstring
++            if lesson_id in list(self.iter_subdeps(this_id)) \
++                    or this_id in list(self.iter_subdeps(lesson_id)):
++                return False
++            return True
++        for i in [k for k in used.keys() if check(k)]:
++            yield i
++    def iter_subdeps(self, lesson_id):
++        for n in self.m_deps[lesson_id]:
++            yield n
++            for nn in self.iter_subdeps(n):
++                yield nn
++    def is_practisable(self, lesson_id):
++        for i in self.iterate_deps_for_id(lesson_id):
++            if not self.lessonfile_manager.is_test_passed(i):
++                return False
++        return True
++    def calculate_visibilities(self):
++        self.m_visibilities = {}
++        v = self.m_deps.keys()
++        v.sort(lambda a, b: self.cmp(a, b))
++        for i in v:
++            if i not in self.lessonfile_manager.m_uiddb:
++                continue
++            if not self.lessonfile_manager.get(i, 'test'):
++                self.m_visibilities[i] = 0
++            elif not list(self.iterate_deps_for_id(i)):
++                self.m_visibilities[i] = 0
++            elif self.is_practisable(i):
++                self.m_visibilities[i] = 0
++            else:
++                self.m_visibilities[i] = max([self.m_visibilities[x] for x in self.m_deps[i]]) + 1
++    def cmp(self, id_a, id_b):
++        """
++        Return -1, 0, 1, like a cmp function.
++        """
++        deps_a = list(self.iter_subdeps(id_b))
++        if id_a in deps_a:
++            return -1
++        deps_b = list(self.iter_subdeps(id_a))
++        if id_b in deps_b:
++            return 1
++        return cmp(len(deps_b), len(deps_a))
++    def get_use_dict(self):
++        """
++        return a dict mapping lesson_id to the number of times the lesson
++        has been added to the learning tree.
++        """
++        retval = {}
++        for lesson_id in self.iterate_all_lessons():
++            retval[lesson_id] = retval.get(lesson_id, 0) + 1
++        return retval
++    def get_use_count(self, lesson_id):
++        """
++        Return an integer telling how many times the lesson lesson_id
++        is used as an exercise.
++        """
++        count = 0
++        for i in self.iterate_all_lessons():
++            if i == lesson_id:
++                count += 1
++        return count
++    def get_dep_use_count(self, lesson_id):
++        """
++        Return an integer telling how many lessons that depends on lesson_id.
++        """
++        count = 0
++        for v in self.m_deps.values():
++            for i in v:
++                if i == lesson_id:
++                    count += 1
++        return count
++    def remove_all_deps_of(self, del_id):
++        for v in self.m_deps.values():
++            if del_id in v:
++                del v[v.index(del_id)]
++        self.m_modified = True
++    def get(self, path):
++        """
++        Return the element pointed to by path.
++        """
++        elem = self.m_menus[path[0]]
++        for idx in path[1:]:
++            elem = elem.children[idx]
++        return elem
++
+
+=== added file 'src/optionparser.py'
+--- src/optionparser.py	1970-01-01 00:00:00 +0000
++++ src/optionparser.py	2009-04-06 22:12:02 +0000
+@@ -0,0 +1,44 @@
++import optparse
++
++class SolfegeOptionParser(optparse.OptionParser):
++    def __init__(self):
++        optparse.OptionParser.__init__(self)
++        self.add_option('-v', '--version', action='store_true', dest='version')
++        self.add_option('-w', '--warranty', action='store_true', dest='warranty',
++            help=_('Show warranty and copyright.'))
++        self.add_option('--no-splash', action='store_false', dest='no_splash',
++            help=_('Do not show the startup window.'),
++            default=False)
++        self.add_option('--verbose-sound-init', action='store_true',
++            default=False,
++            dest='verbose_sound_init',
++            help=_('Display more info about the sound setup.'))
++        self.add_option('--no-sound', action='store_true', dest='no_sound',
++            default=False,
++            help=_('Do not play any sounds. Instead some data is printed to standard output. Use this for debugging and porting.'))
++        self.add_option('--debug', action='store_true', dest='debug',
++            help=_('Include features used by the Solfege developers to debug the program.'))
++        self.add_option('--disable-exception-handler', action='store_true',
++            dest='disable_exception_handler',
++            help=_("Disable the exception handling in Gui.standard_exception_handler."))
++        self.add_option('--no-random', action='store_true', dest='no_random',
++            help=_('For debugging only: Select questions from lesson files in sequential order.'))
++        self.add_option('--enable-gtkhtml', action='store_true', 
++            dest='enable_gtkhtml',
++            help=_('Run using gtkhtml2 instead of the built in HTML viewer.'))
++        self.add_option('--no-cairo-widgets', action='store_true',
++            dest='no_cairo_widgets',
++            help=_("Do not use the cairo version of input widgets, even if we run gtk+ 2.8.0 or newer."))
++        self.add_option('--show-gtk-warnings', action='store_true',
++            dest='show_gtk_warnings',
++            help=_('Show GtkWarnings and PangoWarnings in the traceback window.'))
++    def print_help(self, outfile=None):
++        if outfile is None:
++            outfile = sys.stdout
++        encoding = outfile.encoding
++        if not encoding:
++            encoding = "iso-8859-1"
++        outfile.write(self.format_help().encode(encoding, 'replace'))
++
++
++
+
+=== modified file 'src/rhythm.py'
+--- src/rhythm.py	2008-02-05 20:06:45 +0000
++++ src/rhythm.py	2009-04-06 19:48:52 +0000
+@@ -18,7 +18,7 @@
+ import gtk, gobject
+ import abstract, gu
+ import lessonfile
+-
++import const
+ 
+ class Teacher(abstract.Teacher, abstract.RhythmAddOnClass):
+     OK = 0
+@@ -99,7 +99,7 @@
+             self.g_box.get_children()[self.m_num_beats-1].destroy()
+         vbox = gtk.VBox()
+         vbox.show()
+-        im = gu.create_rhythm_image(abstract.RhythmAddOnClass.RHYTHMS[i])
++        im = gu.create_rhythm_image(const.RHYTHMS[i])
+         vbox.pack_start(im)
+         vbox.pack_start(gu.create_png_image('rhythm-wrong'), False, False)
+         vbox.get_children()[-1].hide()
+@@ -230,13 +230,13 @@
+     def pngbutton(self, i):
+         "used by the constructor"
+         btn = gtk.Button()
+-        if i > len(abstract.RhythmAddOnClass.RHYTHMS):
++        if i > len(const.RHYTHMS):
+             im = gtk.Image()
+             im.set_from_stock("gtk-missing-image", gtk.ICON_SIZE_LARGE_TOOLBAR)
+             im.show()
+             btn.add(im)
+         else:
+-            btn.add(gu.create_rhythm_image(abstract.RhythmAddOnClass.RHYTHMS[i]))
++            btn.add(gu.create_rhythm_image(const.RHYTHMS[i]))
+         btn.show()
+         btn.connect('clicked', self.guess_element, i)
+         return btn
+@@ -251,7 +251,7 @@
+             self.g_backspace.set_sensitive(False)
+     def play_users_answer(self, widget):
+         if self.g_rhythm_viewer.m_data:
+-            rhythm = " ".join([abstract.RhythmAddOnClass.RHYTHMS[c] for c in self.g_rhythm_viewer.m_data])
++            rhythm = " ".join([const.RHYTHMS[c] for c in self.g_rhythm_viewer.m_data])
+             self.m_t.play_rhythm(r"\staff{ %s }" % rhythm)
+     def guess_element(self, sender, i):
+         if self.m_t.q_status == self.QSTATUS_NO:
+
+=== modified file 'tools/buildutil.py'
+--- tools/buildutil.py	2008-03-13 08:08:01 +0000
++++ tools/buildutil.py	2009-04-06 22:13:15 +0000
+@@ -18,6 +18,7 @@
+ import glob
+ import os.path
+ import sys
++import re
+ sys.path.append(".")
+ 
+ def create_languages_py():
+@@ -33,3 +34,19 @@
+     print >> f, "]"
+     f.close()
+ 
++def create_manpage():
++    sys.argv = ['solfege']
++    import src.i18n
++    src.i18n.setup(".")
++    import src.optionparser
++    options = src.optionparser.SolfegeOptionParser().format_help().encode('iso-8859-1', 'replace')
++    v = options.split("\n")
++    del v[0]
++    del v[0]
++    del v[0]
++    options = "\n".join(v)
++    # This option is so long that it messes with the columns, and it confuses txt2man.
++    options = re.sub('--disable-exception-handler\s*', '--disable-exception-handler  ', options)
++    s = open("solfege.1.txt", "r").read()
++    s = s.replace('XXOPTIONS', options)
++    print >> sys.stdout, s
+
+=== modified file 'tools/gen_rhythms_table.py'
+--- tools/gen_rhythms_table.py	2007-11-02 20:36:55 +0000
++++ tools/gen_rhythms_table.py	2009-04-06 19:48:52 +0000
+@@ -9,7 +9,7 @@
+     os.path.join(filesystem.rcfile()))
+ import src.i18n
+ src.i18n.setup(".")
+-import src.abstract
++import src.const
+ 
+ img_str = """%i:<inlinemediaobject>
+       <imageobject>
+@@ -21,9 +21,9 @@
+     </inlinemediaobject>"""
+ f = open("help/C/rhythmtable.xml", "w")
+ print >> f, "<para>"
+-for i, r in enumerate(src.abstract.RhythmAddOnClass.RHYTHMS):
++for i, r in enumerate(src.const.RHYTHMS):
+     print >> f, img_str % (i, r.replace(" ", ""), r),
+-    if i != len(src.abstract.RhythmAddOnClass.RHYTHMS) - 1:
++    if i != len(src.const.RHYTHMS) - 1:
+         print >> f, ", "
+ print >> f, "</para>"
+ f.close()
+
+=== modified file 'tools/generate_lessonfiles.py'
+--- tools/generate_lessonfiles.py	2008-11-06 21:43:44 +0000
++++ tools/generate_lessonfiles.py	2009-04-06 19:48:52 +0000
+@@ -12,8 +12,13 @@
+ sys.path.insert(0, ".")
+ import src.i18n
+ src.i18n.setup(".")
+-from src.learning_tree_editor import LearningTree
+-import mpd
++
++from src.learningtree import LearningTree
++
++# We do this sys.path trick to dragging in dependencies on gtk
++sys.path.insert(0, "mpd")
++from musicalpitch import MusicalPitch
++from interval import Interval
+ 
+ header = """
+ header {
+@@ -32,9 +37,9 @@
+ 
+ def question(f, b, c):
+     low = 60
+-    tone_a = mpd.MusicalPitch.new_from_int(low)
+-    tone_b = mpd.MusicalPitch.new_from_int(low + b)
+-    tone_c = mpd.MusicalPitch.new_from_int(low + c)
++    tone_a = MusicalPitch.new_from_int(low)
++    tone_b = MusicalPitch.new_from_int(low + b)
++    tone_c = MusicalPitch.new_from_int(low + c)
+     print >> f, 'question {'
+     print >> f, '  question_text = _("Sing the three tones")'
+     print >> f, '  music = voice("< %s2 %s %s >")' % (
+@@ -135,7 +140,7 @@
+     return s.replace("m", "min").replace("M", "maj")
+ 
+ def csound_intonation2(harmonic, interval_name, cent):
+-    i = mpd.Interval(interval_name)
++    i = Interval(interval_name)
+     if harmonic:
+         hs = "harmonic-"
+     else:
+@@ -196,7 +201,7 @@
+     tree.new_menu("_Melodic intervals")
+     for idx, cname in enumerate(("m2", "M2", "m3", "M3", "p4", "p5",
+             "m6", "M6", "m7", "M7")):
+-        tree.new_topic(0, mpd.Interval(cname).get_cname())
++        tree.new_topic(0, Interval(cname).get_cname())
+         for cent in (40, 30, 20, 15, 10, 8, 6, 5):
+             csound_intonation2(False, cname, cent)
+             tree.add_lesson((0, idx), "csound-intonation-%s-%icent" % (
+@@ -204,7 +209,7 @@
+     tree.new_menu("_Harmonic intervals")
+     for idx, cname in enumerate(("m2", "M2", "m3", "M3", "p4", "p5",
+             "m6", "M6", "m7", "M7")):
+-        tree.new_topic(1, mpd.Interval(cname).get_cname())
++        tree.new_topic(1, Interval(cname).get_cname())
+         for cent in (40, 30, 20, 15, 10, 8, 6, 5):
+             csound_intonation2(True, cname, cent)
+             tree.add_lesson((1, idx), "csound-intonation-harmonic-%s-%icent" % (
+

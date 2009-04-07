@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.10.4       
-Release:	3%{?dist}
+Version:	3.14.1       
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -8,14 +8,21 @@ License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://dl.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Source1:	solfege.sh.in
+#don't require X to build from Tom Cato Amundsen, to be merged upstream
+Patch0:         solfege-%{version}-no-x.patch
+#make sure desktop file is sane, don't use extension without path in Icon=
+Patch1:         solfege-%{version}-desktop.patch
+
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
-BuildRequires:	pygtk2-devel, libxslt
-BuildRequires:	desktop-file-utils
+BuildRequires:	pygtk2-devel >= 2.12, libxslt
+BuildRequires:  lilypond, swig
+BuildRequires:	desktop-file-utils, gettext
 
-Requires:	timidity++, gnome-python2-gtkhtml2, esound
-Requires:	pygtk2
+Requires:	timidity++, lilypond
+Requires:       gnome-python2-gtkhtml2, esound
+Requires:	pygtk2 >= 2.12
 
 %description
 Solfege is free music education software. Use it to train your rhythm, 
@@ -23,8 +30,14 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
 %setup -q
+%patch0 -p0
+%patch1 -p0
+
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
+
+#fix permissios for debuginfo package
+chmod 0755 $RPM_BUILD_DIR/%{name}-%{version}/src/_version.py
 
 %build
 export INSTALL="%{__install} -c -p"
@@ -75,8 +88,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man?/*
 
 
-
 %changelog
+* Wed Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-1
+- New upstream release
+- Add patch to not require X to build
+- Add patch to fix desktop file, don't use extensions without path in Icon=
+- Add lilypond dependency
+- Make sure permissions in debuginfo are sane
+
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.10.4-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
