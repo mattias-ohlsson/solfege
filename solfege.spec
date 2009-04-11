@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.14.1       
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -17,10 +17,10 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
-BuildRequires:  lilypond, swig
+BuildRequires:  swig
 BuildRequires:	desktop-file-utils, gettext
 
-Requires:	timidity++, lilypond
+Requires:	timidity++
 Requires:       gnome-python2-gtkhtml2, esound
 Requires:	pygtk2 >= 2.12
 
@@ -89,6 +89,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Apr 11 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
+- Don't depend on lilypond
+
 * Wed Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
 - Update launcher script to use esdcompat and not esd
 
