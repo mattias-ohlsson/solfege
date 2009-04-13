@@ -9,7 +9,7 @@ URL:		http://www.solfege.org/
 Source0:	http://dl.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Source1:	solfege.sh.in
 #make sure desktop file is sane, don't use extension without path in Icon=
-Patch1:         solfege-%{version}-desktop.patch
+Patch1:         solfege-3.14.1-desktop.patch
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
