@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.14.1       
-Release:	3%{?dist}
+Version:	3.14.2      
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -8,8 +8,6 @@ License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://dl.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Source1:	solfege.sh.in
-#don't require X to build from Tom Cato Amundsen, to be merged upstream
-Patch0:         solfege-%{version}-no-x.patch
 #make sure desktop file is sane, don't use extension without path in Icon=
 Patch1:         solfege-%{version}-desktop.patch
 
@@ -30,7 +28,6 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
 %setup -q
-%patch0 -p0
 %patch1 -p0
 
 #preserve timestamps
@@ -89,6 +86,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 13 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.2-1
+- New upstream release
+- No-X patch merged upstream, remove it.
+
 * Sat Apr 11 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
 - Don't depend on lilypond
 
