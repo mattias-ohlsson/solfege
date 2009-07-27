@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.14.2      
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -86,6 +86,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.14.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Mon Apr 13 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.2-1
 - New upstream release
 - No-X patch merged upstream, remove it.
