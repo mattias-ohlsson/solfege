@@ -1,0 +1,13 @@
+diff -uNr solfege-3.14.10.old/default.config solfege-3.14.10/default.config
+--- solfege-3.14.10.old/default.config	2009-12-17 20:19:02.000000000 +0100
++++ solfege-3.14.10/default.config	2010-02-07 21:16:38.000000000 +0100
+@@ -69,7 +69,8 @@
+ device_file=/dev/sequencer2
+ synth_number=2
+ wav_player=/usr/bin/aplay
+-midi_player=/usr/bin/timidity -idqq %s
++midi_player=/usr/bin/timidity
++midi_player_options=-idqq %s
+ mp3_player=/usr/bin/mpg123
+ ogg_player=/usr/bin/ogg123
+ 

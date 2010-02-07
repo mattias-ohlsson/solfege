@@ -1,25 +1,27 @@
 Name:		solfege
-Version:	3.14.2      
-Release:	2%{?dist}
+Version:	3.14.10
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
 License:	GPLv3
 URL:		http://www.solfege.org/
-Source0:	http://dl.sourceforge.net/solfege/%{name}-%{version}.tar.gz
+Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Source1:	solfege.sh.in
-#make sure desktop file is sane, don't use extension without path in Icon=
-Patch1:         solfege-3.14.1-desktop.patch
+# make sure desktop file is sane, don't use extension without path in Icon=
+Patch1:		solfege-3.14.1-desktop.patch
+# fix default config
+Patch2:		solfege-3.14.10-default_config.patch
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
-BuildRequires:  swig
+BuildRequires:	swig
 BuildRequires:	desktop-file-utils, gettext
 
 Requires:	timidity++
-Requires:       gnome-python2-gtkhtml2, esound
+Requires:	gnome-python2-gtkhtml2, esound
 Requires:	pygtk2 >= 2.12
 
 %description
@@ -29,6 +31,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %prep
 %setup -q
 %patch1 -p0
+%patch2 -p1
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -53,9 +56,9 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 #Change encoding to UTF-8
 for f in AUTHORS README ; do
-        iconv -f ISO-8859-15 -t UTF-8 $f > ${f}.tmp && \
-                %{__mv} -f ${f}.tmp ${f} || \
-                %{__rm} -f ${f}.tmp
+	iconv -f ISO-8859-15 -t UTF-8 $f > ${f}.tmp && \
+		%{__mv} -f ${f}.tmp ${f} || \
+		%{__rm} -f ${f}.tmp
 done
 
 #Setup wrapper script
@@ -63,10 +66,10 @@ done
 
 %find_lang %{name}
 
-desktop-file-install --vendor fedora --delete-original  \
-        --dir $RPM_BUILD_ROOT%{_datadir}/applications   \
-        --remove-category Application \
-        $RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
+desktop-file-install --vendor fedora --delete-original \
+	--dir $RPM_BUILD_ROOT%{_datadir}/applications \
+	--remove-category Application \
+	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -86,6 +89,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Feb 07 2010 Christian Krause <chkr@fedoraproject.org> - 3.14.10-1
+- Update to new upstream release
+- Some spec file cleanup
+- Add minor patch to fix a problem with the default config (programs and
+  their parameters are now stored in separate config entries)
+
 * Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.14.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
