@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.14.10
+Version:	3.14.11
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -7,17 +7,19 @@ Group:		Applications/Multimedia
 License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
-Source1:	solfege.sh.in
 # make sure desktop file is sane, don't use extension without path in Icon=
 Patch1:		solfege-3.14.1-desktop.patch
-# fix default config
-Patch2:		solfege-3.14.10-default_config.patch
+# use timidity as default
+Patch2:		solfege-3.14.11-default-timidity.patch
+# remove /usr/bin from the python search path to avoid a
+# collision with /usr/bin/mpd.py (from mpich2 package)
+Patch3:		solfege-3.14.11-search-path.patch
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
-BuildRequires:	swig
+BuildRequires:	swig, txt2man
 BuildRequires:	desktop-file-utils, gettext
 
 Requires:	timidity++
@@ -32,6 +34,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %setup -q
 %patch1 -p0
 %patch2 -p1
+%patch3 -p1
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -49,8 +52,7 @@ make %{?_smp_mflags}
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-%{__mkdir} $RPM_BUILD_ROOT%{_libexecdir}
-%{__mv} $RPM_BUILD_ROOT%{_bindir}/solfege $RPM_BUILD_ROOT%{_libexecdir}/solfege-bin
+
 #permissions
 %{__chmod} 755 $RPM_BUILD_ROOT%{_libdir}/solfege/*.so
 
@@ -60,9 +62,6 @@ for f in AUTHORS README ; do
 		%{__mv} -f ${f}.tmp ${f} || \
 		%{__rm} -f ${f}.tmp
 done
-
-#Setup wrapper script
-%{__install} -m 755 %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/solfege
 
 %find_lang %{name}
 
@@ -80,7 +79,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc README AUTHORS COPYING
 %config(noreplace) %{_sysconfdir}/*
 %{_bindir}/*
-%{_libexecdir}/*
 %{_libdir}/solfege
 %{_datadir}/solfege/
 %{_datadir}/applications/*
@@ -89,6 +87,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 07 2010 Christian Krause <chkr@fedoraproject.org> - 3.14.11-1
+- Update to new upstream release
+- Remove upstreamed patch
+- Use timitidy as default
+- Add patch to remove /usr/bin from python's search path to avoid crash
+  on startup if package mpich2 is installed
+
 * Sun Feb 07 2010 Christian Krause <chkr@fedoraproject.org> - 3.14.10-1
 - Update to new upstream release
 - Some spec file cleanup
