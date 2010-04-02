@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.14.11
+Version:	3.16.0
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -11,10 +11,6 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Patch1:		solfege-3.14.1-desktop.patch
 # use timidity as default
 Patch2:		solfege-3.14.11-default-timidity.patch
-# remove /usr/bin from the python search path to avoid a
-# collision with /usr/bin/mpd.py (from mpich2 package)
-Patch3:		solfege-3.14.11-search-path.patch
-
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
@@ -33,14 +29,10 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %prep
 %setup -q
 %patch1 -p0
-%patch2 -p1
-%patch3 -p1
+%patch2 -F 1 -p1
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
-
-#fix permissios for debuginfo package
-chmod 0755 $RPM_BUILD_DIR/%{name}-%{version}/src/_version.py
 
 %build
 export INSTALL="%{__install} -c -p"
@@ -55,6 +47,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 #permissions
 %{__chmod} 755 $RPM_BUILD_ROOT%{_libdir}/solfege/*.so
+%{__chmod} 755 $RPM_BUILD_ROOT%{_datadir}/solfege/solfege/_version.py
 
 #Change encoding to UTF-8
 for f in AUTHORS README ; do
@@ -87,6 +80,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 02 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.0-1
+- Update to new upstream release
+- Remove patch to fix python's search path, solfege uses absolute
+  imports now
+
 * Sun Mar 07 2010 Christian Krause <chkr@fedoraproject.org> - 3.14.11-1
 - Update to new upstream release
 - Remove upstreamed patch
