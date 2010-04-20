@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.16.0
+Version:	3.16.1
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Apr 18 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.1-1
+- Update to new upstream release
+
 * Fri Apr 02 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.0-1
 - Update to new upstream release
 - Remove patch to fix python's search path, solfege uses absolute
