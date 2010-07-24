@@ -11,6 +11,8 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Patch1:		solfege-3.14.1-desktop.patch
 # use timidity as default
 Patch2:		solfege-3.14.11-default-timidity.patch
+# build fix, http://code.google.com/p/solfege/issues/detail?id=192
+Patch3:		solfege-3.16.4-build-fix.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
@@ -30,6 +32,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %setup -q
 %patch1 -p0
 %patch2 -F 1 -p1
+%patch3 -p1
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -82,6 +85,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Sat Jul 24 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.4-1
 - Update to new upstream release (BZ 617836)
+- Add patch to fix a build problem
 
 * Wed May 19 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.3-1
 - Update to new upstream release
