@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.16.3
+Version:	3.16.4
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -80,6 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jul 24 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.4-1
+- Update to new upstream release (BZ 617836)
+
 * Wed May 19 2010 Christian Krause <chkr@fedoraproject.org> - 3.16.3-1
 - Update to new upstream release
 
