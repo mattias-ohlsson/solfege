@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.18.3
+Version:	3.18.6
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -11,8 +11,6 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Patch1:		solfege-3.14.1-desktop.patch
 # use timidity as default
 Patch2:		solfege-3.14.11-default-timidity.patch
-# http://code.google.com/p/solfege/issues/detail?id=202 
-Patch3:		solfege-3.18.3-build-fix.patch
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -33,7 +31,6 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %setup -q
 %patch1 -p0
 %patch2 -F 1 -p1
-%patch3 -p1
 
 #remove unneeded shebang to make rpmlint happy
 %{__sed} -i.stamp -e 's|#!/usr/bin/python||' solfege/rhythmwidget.py
@@ -87,6 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 27 2010 Christian Krause <chkr@fedoraproject.org> - 3.18.6-1
+- Update to new upstream release (BZ 643606)
+- Remove upstreamed patch
+
 * Sun Oct 10 2010 Christian Krause <chkr@fedoraproject.org> - 3.18.3-1
 - Update to new upstream release (BZ 636475)
 - Update patch to fix the build problem with swig 2.0
