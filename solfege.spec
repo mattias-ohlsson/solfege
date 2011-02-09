@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.18.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -84,6 +84,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.18.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Wed Nov 17 2010 Christian Krause <chkr@plauener.de> - 3.18.7-1
 - Update to new upstream release (BZ 648180)
 
