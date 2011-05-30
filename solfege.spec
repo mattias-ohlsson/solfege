@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.18.7
-Release:	3%{?dist}
+Version:	3.18.8
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -11,8 +11,6 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 Patch1:		solfege-3.14.1-desktop.patch
 # use timidity as default
 Patch2:		solfege-3.14.11-default-timidity.patch
-
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
@@ -46,7 +44,6 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 #permissions
@@ -67,10 +64,6 @@ desktop-file-install --vendor fedora --delete-original \
 	--remove-category Application \
 	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %doc README AUTHORS COPYING
@@ -84,6 +77,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 30 2011 Christian Krause <chkr@fedoraproject.org> - 3.18.8-1
+- Update to new upstream release (BZ 707534)
+- Minor spec file cleanup
+
 * Sun Mar 06 2011 Christian Krause <chkr@fedoraproject.org> - 3.18.7-3
 - Remove superfluous dependency to esound (BZ 678361)
 
