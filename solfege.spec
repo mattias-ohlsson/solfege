@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.18.8
+Version:	3.20.0
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -7,11 +7,8 @@ Group:		Applications/Multimedia
 License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
-# make sure desktop file is sane, don't use extension without path in Icon=
-Patch1:		solfege-3.14.1-desktop.patch
-# use timidity as default
-Patch2:		solfege-3.14.11-default-timidity.patch
 
+BuildRequires:	python2-devel
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
 BuildRequires:	swig, txt2man
@@ -27,11 +24,6 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
 %setup -q
-%patch1 -p0
-%patch2 -F 1 -p1
-
-#remove unneeded shebang to make rpmlint happy
-%{__sed} -i.stamp -e 's|#!/usr/bin/python||' solfege/rhythmwidget.py
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -65,18 +57,21 @@ desktop-file-install --vendor fedora --delete-original \
 	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
 
 %files -f %{name}.lang
-%defattr(-,root,root,-)
 %doc README AUTHORS COPYING
 %config(noreplace) %{_sysconfdir}/*
 %{_bindir}/*
-%{_libdir}/solfege
+%{_libdir}/solfege/
 %{_datadir}/solfege/
 %{_datadir}/applications/*
 %{_datadir}/pixmaps/*
 %{_mandir}/man?/*
 
-
 %changelog
+* Sat Jun 18 2011 Christian Krause <chkr@fedoraproject.org> - 3.20.0-1
+- Update to new upstream release (BZ 713414)
+- Remove upstreamed patches
+- Minor spec file cleanup
+
 * Mon May 30 2011 Christian Krause <chkr@fedoraproject.org> - 3.18.8-1
 - Update to new upstream release (BZ 707534)
 - Minor spec file cleanup
