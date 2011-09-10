@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.20.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -15,7 +15,6 @@ BuildRequires:	swig, txt2man
 BuildRequires:	desktop-file-utils, gettext
 
 Requires:	timidity++
-Requires:	gnome-python2-gtkhtml2
 Requires:	pygtk2 >= 2.12
 
 %description
@@ -67,6 +66,9 @@ desktop-file-install --vendor fedora --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Sat Sep 10 2011 Christian Krause <chkr@fedoraproject.org> - 3.20.1-2
+- Remove superfluous Requires: gnome-python2-gtkhtml2
+
 * Sun Jul 24 2011 Christian Krause <chkr@fedoraproject.org> - 3.20.1-1
 - Update to new upstream release (BZ 720301)
 
