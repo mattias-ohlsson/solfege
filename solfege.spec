@@ -1,12 +1,15 @@
 Name:		solfege
 Version:	3.20.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
 License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
+# Fix startup issue on F17+ (BZ 832764):
+# Correctly determine the PREFIX even if solfege is executed as /bin/solfege
+Patch0:		solfege-3.20.6-prefix.patch
 
 BuildRequires:	python2-devel
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
@@ -23,6 +26,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
 %setup -q
+%patch0 -p1 -b .prefix
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -66,6 +70,9 @@ desktop-file-install --vendor fedora --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Sun Sep 02 2012 Christian Krause <chkr@fedoraproject.org> - 3.20.6-2
+- Add patch to fix startup issue on F17+ (BZ 832764)
+
 * Sat Jul 21 2012 Christian Krause <chkr@fedoraproject.org> - 3.20.6-1
 - Update to new upstream release (BZ 834200)
 
