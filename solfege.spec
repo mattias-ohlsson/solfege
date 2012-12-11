@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.20.6
-Release:	2%{?dist}
+Version:	3.20.7
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -70,6 +70,9 @@ desktop-file-install --vendor fedora --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Fri Dec 07 2012 Christian Krause <chkr@fedoraproject.org> - 3.20.7-1
+- Update to new upstream release (BZ 880539)
+
 * Sun Sep 02 2012 Christian Krause <chkr@fedoraproject.org> - 3.20.6-2
 - Add patch to fix startup issue on F17+ (BZ 832764)
 
