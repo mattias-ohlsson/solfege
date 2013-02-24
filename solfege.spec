@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.20.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -54,7 +54,10 @@ done
 
 %find_lang %{name}
 
-desktop-file-install --vendor fedora --delete-original \
+desktop-file-install --delete-original \
+%if 0%{?fedora} && 0%{?fedora} < 19
+	--vendor fedora \
+%endif
 	--dir $RPM_BUILD_ROOT%{_datadir}/applications \
 	--remove-category Application \
 	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
@@ -70,6 +73,9 @@ desktop-file-install --vendor fedora --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Sun Feb 24 2013 Toshio Kuratomi <toshio@fedoraproject.org> - 3.20.7-3
+- Remove --vendor from desktop-file-install. https://fedorahosted.org/fesco/ticket/1077
+
 * Fri Feb 15 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.20.7-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
