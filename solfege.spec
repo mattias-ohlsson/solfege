@@ -10,6 +10,8 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 # Fix startup issue on F17+ (BZ 832764):
 # Correctly determine the PREFIX even if solfege is executed as /bin/solfege
 Patch0:		solfege-3.20.6-prefix.patch
+# Fix texinfo... something (more recent tex?) Got more strict about sections.
+Patch1: solfege-texi-section.patch
 
 BuildRequires:	python2-devel
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
@@ -27,6 +29,7 @@ interval, scale and chord skills. Solfege - Smarten your ears!
 %prep
 %setup -q
 %patch0 -p1 -b .prefix
+%patch1 -p1 -b .sec
 
 #preserve timestamps
 %{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
@@ -75,6 +78,7 @@ desktop-file-install --delete-original \
 %changelog
 * Sun Feb 24 2013 Toshio Kuratomi <toshio@fedoraproject.org> - 3.20.7-3
 - Remove --vendor from desktop-file-install. https://fedorahosted.org/fesco/ticket/1077
+- Patch to fix up the FAQ texi file
 
 * Fri Feb 15 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.20.7-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
