@@ -1,6 +1,6 @@
 Name:		solfege
-Version:	3.20.7
-Release:	3%{?dist}
+Version:	3.22.0
+Release:	1%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -10,11 +10,9 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 # Fix startup issue on F17+ (BZ 832764):
 # Correctly determine the PREFIX even if solfege is executed as /bin/solfege
 Patch0:		solfege-3.20.6-prefix.patch
-# Fix texinfo... something (more recent tex?) Got more strict about sections.
-Patch1: solfege-texi-section.patch
 
 BuildRequires:	python2-devel
-BuildRequires:	texinfo, swig, gettext, docbook-style-xsl 
+BuildRequires:	texinfo, swig, gettext, docbook-style-xsl
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
 BuildRequires:	swig, txt2man
 BuildRequires:	desktop-file-utils, gettext
@@ -23,16 +21,12 @@ Requires:	timidity++
 Requires:	pygtk2 >= 2.12
 
 %description
-Solfege is free music education software. Use it to train your rhythm, 
+Solfege is free music education software. Use it to train your rhythm,
 interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
 %setup -q
-%patch0 -p1 -b .prefix
-%patch1 -p1 -b .sec
-
-#preserve timestamps
-%{__sed} -i.stamp -e 's|shutil\.copy|shutil.copy2|' tools/pcopy.py
+%patch0 -F 2 -p1 -b .prefix
 
 %build
 export INSTALL="%{__install} -c -p"
@@ -58,9 +52,6 @@ done
 %find_lang %{name}
 
 desktop-file-install --delete-original \
-%if 0%{?fedora} && 0%{?fedora} < 19
-	--vendor fedora \
-%endif
 	--dir $RPM_BUILD_ROOT%{_datadir}/applications \
 	--remove-category Application \
 	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
@@ -76,6 +67,11 @@ desktop-file-install --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Mon Jun 03 2013 Christian Krause <chkr@fedoraproject.org> - 3.22.0-1
+- Update to new major upstream release (BZ 895045)
+- Remove upstreamed patch
+- Remove conditional --vendor since new release will be built for F19+ only
+
 * Sun Feb 24 2013 Toshio Kuratomi <toshio@fedoraproject.org> - 3.20.7-3
 - Remove --vendor from desktop-file-install. https://fedorahosted.org/fesco/ticket/1077
 - Patch to fix up the FAQ texi file
