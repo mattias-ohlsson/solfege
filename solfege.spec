@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.22.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -67,6 +67,9 @@ desktop-file-install --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.22.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Mon Jun 03 2013 Christian Krause <chkr@fedoraproject.org> - 3.22.0-1
 - Update to new major upstream release (BZ 895045)
 - Remove upstreamed patch
