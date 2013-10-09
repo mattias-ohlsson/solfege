@@ -1,5 +1,5 @@
 Name:		solfege
-Version:	3.22.1
+Version:	3.22.2
 Release:	1%{?dist}
 Summary:	Music education software
 
@@ -67,6 +67,9 @@ desktop-file-install --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Wed Oct 09 2013 Christian Krause <chkr@fedoraproject.org> - 3.22.2-1
+- Update to new upstream release (BZ 1016286)
+
 * Mon Sep 16 2013 Christian Krause <chkr@fedoraproject.org> - 3.22.1-1
 - Update to new upstream release (BZ 1008434)
 
