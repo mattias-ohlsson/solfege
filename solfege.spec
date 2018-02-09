@@ -1,6 +1,6 @@
 Name:		solfege
 Version:	3.22.2
-Release:	8%{?dist}
+Release:	9%{?dist}
 Summary:	Music education software
 
 Group:		Applications/Multimedia
@@ -67,6 +67,9 @@ desktop-file-install --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.22.2-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 3.22.2-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
