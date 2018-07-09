@@ -11,6 +11,7 @@ Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
 # Correctly determine the PREFIX even if solfege is executed as /bin/solfege
 Patch0:		solfege-3.20.6-prefix.patch
 
+BuildRequires:  gcc
 BuildRequires:	python2-devel
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl
 BuildRequires:	pygtk2-devel >= 2.12, libxslt
