@@ -7,7 +7,6 @@ Version:	3.22.2
 Release:	10%{?dist}
 Summary:	Music education software
 
-Group:		Applications/Multimedia
 License:	GPLv3
 URL:		http://www.solfege.org/
 Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
