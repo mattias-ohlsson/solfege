@@ -4,7 +4,7 @@
 
 Name:		solfege
 Version:	3.22.2
-Release:	10%{?dist}
+Release:	11%{?dist}
 Summary:	Music education software
 
 License:	GPLv3
@@ -71,6 +71,9 @@ desktop-file-install --delete-original \
 %{_mandir}/man?/*
 
 %changelog
+* Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.22.2-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 3.22.2-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
