@@ -1,76 +1,53 @@
-# This package depends on automagic byte compilation
-# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
-%global _python_bytecompile_extra 1
-
 Name:		solfege
-Version:	3.22.2
-Release:	12%{?dist}
+Version:	3.23.4
+Release:	1%{?dist}
 Summary:	Music education software
 
 License:	GPLv3
-URL:		http://www.solfege.org/
-Source0:	http://downloads.sourceforge.net/solfege/%{name}-%{version}.tar.gz
-# Fix startup issue on F17+ (BZ 832764):
-# Correctly determine the PREFIX even if solfege is executed as /bin/solfege
-Patch0:		solfege-3.20.6-prefix.patch
+URL:		https://www.gnu.org/software/solfege/
+Source0:	https://alpha.gnu.org/gnu/solfege/%{name}-%{version}.tar.gz
 
-BuildRequires:  gcc
-BuildRequires:	python2-devel
+BuildArch:	noarch
+
+BuildRequires:	gcc
+BuildRequires:	python3-devel python3-gobject
 BuildRequires:	texinfo, swig, gettext, docbook-style-xsl
-BuildRequires:	pygtk2-devel >= 2.12, libxslt
+BuildRequires:	libxslt
 BuildRequires:	swig, txt2man
-BuildRequires:	desktop-file-utils, gettext
 
 Requires:	timidity++
-Requires:	pygtk2 >= 2.12
 
 %description
 Solfege is free music education software. Use it to train your rhythm,
 interval, scale and chord skills. Solfege - Smarten your ears!
 
 %prep
-%setup -q
-%patch0 -F 2 -p1 -b .prefix
+%autosetup
 
 %build
-export INSTALL="%{__install} -c -p"
-#override hardocded path
-%configure --enable-docbook-stylesheet=`ls %{_datadir}/sgml/docbook/xsl-stylesheets-1.*/html/chunk.xsl`
-make %{?_smp_mflags}
-
+%configure --disable-oss-sound
+%make_build
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
+%make_install
 
-#permissions
-%{__chmod} 755 $RPM_BUILD_ROOT%{_libdir}/solfege/*.so
-%{__chmod} 755 $RPM_BUILD_ROOT%{_datadir}/solfege/solfege/_version.py
-
-#Change encoding to UTF-8
-for f in AUTHORS README ; do
-	iconv -f ISO-8859-15 -t UTF-8 $f > ${f}.tmp && \
-		%{__mv} -f ${f}.tmp ${f} || \
-		%{__rm} -f ${f}.tmp
-done
-
-%find_lang %{name}
-
-desktop-file-install --delete-original \
-	--dir $RPM_BUILD_ROOT%{_datadir}/applications \
-	--remove-category Application \
-	$RPM_BUILD_ROOT%{_datadir}/applications/%{name}.desktop
-
-%files -f %{name}.lang
-%doc README AUTHORS COPYING
+%files
+%license COPYING
+%doc README AUTHORS FAQ
 %config(noreplace) %{_sysconfdir}/*
-%{_bindir}/*
-%{_libdir}/solfege/
-%{_datadir}/solfege/
+%{_bindir}/%{name}
+%{_datadir}/%{name}/
 %{_datadir}/applications/*
 %{_datadir}/pixmaps/*
+%{_datadir}/locale/*/*/%{name}.mo
 %{_mandir}/man?/*
 
 %changelog
+* Sun Jun 07 2020 Mattias Ohlsson <mattias.ohlsson@inprose.com> - 3.23.4-1
+- Update to 3.23.4
+- Fix changelog (change Wed Apr 7 2009 to Tue Apr 7 2009)
+
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 3.22.2-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
@@ -216,10 +193,10 @@ desktop-file-install --delete-original \
 * Sat Apr 11 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
 - Don't depend on lilypond
 
-* Wed Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
+* Tue Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-2
 - Update launcher script to use esdcompat and not esd
 
-* Wed Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-1
+* Tue Apr 7 2009 Sindre Pedersen Bjørdal <sindrepb@fedoraproject.org> - 3.14.1-1
 - New upstream release
 - Add patch to not require X to build
 - Add patch to fix desktop file, don't use extensions without path in Icon=
